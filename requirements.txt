@@ -1,0 +1,8 @@
+fastapi==0.115.5
+uvicorn==0.23.2
+sqlmodel==0.0.22
+alembic==1.12.1
+httpx==0.25.2
+pydantic[email]==1.10.14
+python-multipart==0.0.6
+rich==13.7.0

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZSTRM Dashboard</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #0c162d; color: #f2f5ff; }
+      header { background: #0f203f; padding: 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; }
+      nav a { margin-right: 12px; color: #a5c0ff; text-decoration: none; }
+      nav a:hover { text-decoration: underline; }
+      section { padding: 16px; border-bottom: 1px solid #1c2a4d; }
+      h2 { margin-top: 0; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+      .card { background: #10264d; padding: 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+      .pill { background: #1f3a6b; padding: 4px 8px; border-radius: 999px; font-size: 12px; }
+      button { padding: 8px 12px; border-radius: 6px; border: 1px solid #244c8a; background: #1a73e8; color: white; cursor: pointer; }
+      button.secondary { background: transparent; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div><strong>ZSTRM Control</strong></div>
+      <nav>
+        <a href="#streams">Streams</a>
+        <a href="#assets">Assets</a>
+        <a href="#destinations">Destinations</a>
+        <a href="#presets">Presets</a>
+        <a href="#history">History</a>
+        <a href="#settings">Settings</a>
+      </nav>
+      <button id="stop-all">Stop all streams</button>
+    </header>
+    <main>
+      <section id="streams">
+        <h2>Streams <span class="pill">Fix required filter</span></h2>
+        <div class="grid" id="stream-list">
+          <div class="card">No streams yet. Scheduled runs and "Run now" sessions will appear here.</div>
+        </div>
+      </section>
+      <section id="assets">
+        <h2>Assets</h2>
+        <p>Upload (max 500MB), verify Google Drive imports, ffprobe analysis, and thumbnails.</p>
+        <button>Upload asset</button>
+        <div class="grid" id="asset-list"></div>
+      </section>
+      <section id="destinations">
+        <h2>Destinations</h2>
+        <p>Create RTMP targets and bulk actions.</p>
+        <div class="grid" id="destination-list"></div>
+      </section>
+      <section id="presets">
+        <h2>Presets</h2>
+        <p>Copy/remux safety defaults, force-encode overrides, audio replace, and hot swap behavior.</p>
+        <div class="grid" id="preset-list"></div>
+      </section>
+      <section id="history">
+        <h2>History</h2>
+        <p>Events and downloadable FFmpeg logs.</p>
+        <div class="grid" id="history-list"></div>
+      </section>
+      <section id="settings">
+        <h2>Settings & Licensing</h2>
+        <p>Manage license, updates, and quick actions for invalid items.</p>
+        <button class="secondary">Refresh license</button>
+      </section>
+    </main>
+    <script>
+      async function fetchSummary() {
+        try {
+          const res = await fetch('/api/dashboard', { headers: { 'X-API-Key': 'dev-key' } });
+          const data = await res.json();
+          document.getElementById('stream-list').innerHTML = `<div class="card">Active sessions: ${data.active_sessions} / Invalid jobs: ${data.invalid_jobs}</div>`;
+          document.getElementById('asset-list').innerHTML = `<div class="card">${data.assets} assets</div>`;
+          document.getElementById('destination-list').innerHTML = `<div class="card">${data.destinations} destinations</div>`;
+          document.getElementById('preset-list').innerHTML = `<div class="card">${data.presets} presets</div>`;
+          document.getElementById('history-list').innerHTML = `<div class="card">${data.streams} sessions recorded</div>`;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      fetchSummary();
+    </script>
+  </body>
+</html>

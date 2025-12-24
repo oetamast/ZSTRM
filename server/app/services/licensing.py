@@ -6,7 +6,7 @@ from typing import Optional
 import httpx
 from sqlmodel import select
 from ..config import settings
-from ..database import get_session
+from ..database import get_session, init_db
 from ..models import EventLog, EventType, LicenseState, LicenseTier
 
 
@@ -61,6 +61,7 @@ async def renew_license(state: LicenseState) -> LicenseState:
 
 class LicensingClient:
     def __init__(self) -> None:
+        init_db()
         self.state: LicenseState = _load_license()
         self._task: Optional[asyncio.Task] = None
 
